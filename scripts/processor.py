@@ -340,6 +340,7 @@ clip_encoder = {
     'clip_g': None,
     'clip_h': None,
     'clip_vitl': None,
+    'clip_h_foo': None,
 }
 
 

@@ -163,6 +163,8 @@ cython_debug/
 *.ckpt
 *.bin
 *.safetensors
+*.ldb
+models/put_controlnets_and_t2i_here
 
 # Editor setting metadata
 .idea/

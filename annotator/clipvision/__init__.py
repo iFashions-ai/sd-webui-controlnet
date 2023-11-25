@@ -68,13 +68,15 @@ config_clip_vitl = {
 configs = {
     'clip_g': config_clip_g,
     'clip_h': config_clip_h,
+    'clip_h_foo': config_clip_h,
     'clip_vitl': config_clip_vitl,
 }
 
 downloads = {
     'clip_vitl': 'https://huggingface.co/openai/clip-vit-large-patch14/resolve/main/pytorch_model.bin',
     'clip_g': 'https://huggingface.co/lllyasviel/Annotators/resolve/main/clip_g.pth',
-    'clip_h': 'https://huggingface.co/h94/IP-Adapter/resolve/main/models/image_encoder/pytorch_model.bin'
+    'clip_h': 'https://huggingface.co/h94/IP-Adapter/resolve/main/models/image_encoder/pytorch_model.bin',
+    'clip_h_foo': 'https://huggingface.co/lllyasviel/misc/resolve/main/clip_vision_vit_h.safetensors'
 }
 
 
