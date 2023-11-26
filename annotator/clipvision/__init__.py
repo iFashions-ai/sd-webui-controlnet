@@ -2,6 +2,9 @@ import os
 import cv2
 import torch
 
+from PIL import Image
+import numpy as np
+
 from modules import devices
 from modules.modelloader import load_file_from_url
 from annotator.annotator_path import models_path
@@ -86,6 +89,11 @@ clip_vision_h_uc = torch.load(clip_vision_h_uc)['uc']
 clip_vision_vith_uc = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'clip_vision_vith_uc.data')
 clip_vision_vith_uc = torch.load(clip_vision_vith_uc)['uc']
 
+LANCZOS = (Image.Resampling.LANCZOS if hasattr(Image, 'Resampling') else Image.LANCZOS)
+
+def resize(im, w, h):
+    im = Image.fromarray(im)
+    return np.array(im.resize((w, h), resample=LANCZOS))
 
 class ClipVisionDetector:
     def __init__(self, config):
@@ -124,7 +132,8 @@ class ClipVisionDetector:
 
     def __call__(self, input_image):
         with torch.no_grad():
-            input_image = cv2.resize(input_image, (224, 224), interpolation=cv2.INTER_AREA)
+            # input_image = cv2.resize(input_image, (224, 224), interpolation=cv2.INTER_AREA)
+            input_image = resize(input_image, 224, 224)
             clip_vision_model = self.model.cpu()
             feat = self.processor(images=input_image, return_tensors="pt")
             feat['pixel_values'] = feat['pixel_values'].cpu()
