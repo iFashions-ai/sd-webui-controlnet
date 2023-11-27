@@ -1,5 +1,7 @@
 import cv2
 import numpy as np
+from dataclasses import dataclass
+from enum import Enum
 
 from annotator.util import HWC3
 from typing import Callable, Tuple
@@ -989,6 +991,31 @@ preprocessor_sliders_config = {
     ],
 }
 
+
+class ResizeMode(Enum):
+    RESIZE = "Just Resize"
+    INNER_FIT = "Crop and Resize"
+    OUTER_FIT = "Resize and Fill"
+
+
+@dataclass
+class PreprocessorDefaults:
+    option: str
+    model: str
+    control_weight: float = 1
+    control_start: float = 0
+    control_end: float = 1
+    resize_mode: ResizeMode = ResizeMode.OUTER_FIT
+
+
+preprocessor_filters_with_defaults = {
+    "IP-Adapter": PreprocessorDefaults("ip-adapter_clip_sdxl", "ip-adapter_xl [4209e9f7]", control_weight=0.7, control_end=0.7, resize_mode=ResizeMode.RESIZE) ,
+    "IP-Adapter-plus": PreprocessorDefaults("ip-adapter_clip_vith_foo", "ip-adapter-plus_sdxl_vit-h [f1f19f7d]", control_weight=0.5, control_end=0.5, resize_mode=ResizeMode.RESIZE),
+    "Canny": PreprocessorDefaults("canny", "t2i-adapter-canny-sdxl-1.0 [b016005c]", control_weight=1, control_end=1, resize_mode=ResizeMode.OUTER_FIT),
+    "Depth": PreprocessorDefaults("depth_midas", "t2i-adapter-depth-midas-sdxl-1.0 [8b4552d9]", control_weight=1, control_end=1, resize_mode=ResizeMode.OUTER_FIT),
+    "Scribble/Sketch": PreprocessorDefaults("t2ia_sketch_pidi", "t2i-adapter-sketch-sdxl-1.0 [f71e64c1]", control_weight=1, control_end=1, resize_mode=ResizeMode.OUTER_FIT),
+}
+
 preprocessor_filters = {
     "All": "none",
     "Canny": "canny",
@@ -1020,3 +1047,8 @@ preprocessor_filters_aliases = {
     'scribble/sketch': ['scribble', 'sketch'],
     'tile/blur': ['tile', 'blur']
 }  # must use all lower texts
+
+
+for k, default in preprocessor_filters_with_defaults.items():
+    preprocessor_filters[k] = default.option
+    preprocessor_filters_aliases.setdefault(k.lower(), []).append(default.option.lower())

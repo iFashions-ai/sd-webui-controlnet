@@ -18,6 +18,7 @@ from scripts.processor import (
     flag_preprocessor_resolution,
     model_free_preprocessors,
     preprocessor_filters,
+    preprocessor_filters_with_defaults,
     HWC3,
 )
 from scripts.logging import logger
@@ -301,6 +302,13 @@ class ControlNetUiGroup(object):
                 elem_classes=["cnet-preview-as-input"],
                 visible=False,
             )
+            default_show_all_controls = False
+            self.show_all_controls = gr.Checkbox(
+                label="Show All Controls",
+                value=default_show_all_controls,
+                elem_id=f"{elem_id_tabname}_{tabname}_controlnet_show_all_controls_checkbox",
+                elem_classes=["cnet-unit-enabled"],
+            )
 
         with gr.Row(elem_classes="controlnet_img2img_options"):
             if is_img2img:
@@ -314,14 +322,21 @@ class ControlNetUiGroup(object):
                 self.upload_independent_img_in_img2img = None
 
         if not shared.opts.data.get("controlnet_disable_control_type", False):
+            filters = list(preprocessor_filters.keys() if default_show_all_controls else preprocessor_filters_with_defaults.keys())
             with gr.Row(elem_classes=["controlnet_control_type", "controlnet_row"]):
                 self.type_filter = gr.Radio(
-                    list(preprocessor_filters.keys()),
-                    label=f"Control Type",
-                    value="All",
+                    choices=filters,
+                    label="Control Type",
+                    value=filters[0],
                     elem_id=f"{elem_id_tabname}_{tabname}_controlnet_type_filter_radio",
                     elem_classes="controlnet_control_type_filter_group",
                 )
+
+            def fn_show_all_controls(value):
+                filters = list(preprocessor_filters.keys() if value else preprocessor_filters_with_defaults.keys())
+                return gr.Radio.update(choices=filters, default=filters[0])
+
+            self.show_all_controls.change(fn_show_all_controls, self.show_all_controls, self.type_filter)
 
         with gr.Row(elem_classes=["controlnet_preprocessor_model", "controlnet_row"]):
             self.module = gr.Dropdown(
@@ -614,11 +629,31 @@ class ControlNetUiGroup(object):
                     default_model,
                 ) = global_state.select_control_type(k)
 
+                if k in preprocessor_filters_with_defaults:
+                    default = preprocessor_filters_with_defaults[k]
+                    default_option, default_model = default.option, default.model
+                    return [
+                        gr.Dropdown.update(
+                            value=default_option, choices=filtered_preprocessor_list
+                        ),
+                        gr.Dropdown.update(
+                            value=default_model, choices=filtered_model_list
+                        ),
+                        gr.Radio.update(value=default.resize_mode),
+                        gr.Slider.update(value=default.control_weight),
+                        gr.Slider.update(value=default.control_start),
+                        gr.Slider.update(value=default.control_end),
+                    ]
+
                 if self.prevent_next_n_module_update > 0:
                     self.prevent_next_n_module_update -= 1
                     return [
                         gr.Dropdown.update(choices=filtered_preprocessor_list),
                         gr.Dropdown.update(choices=filtered_model_list),
+                        gr.Radio.update(),
+                        gr.Slider.update(),
+                        gr.Slider.update(),
+                        gr.Slider.update(),
                     ]
                 else:
                     return [
@@ -628,12 +663,16 @@ class ControlNetUiGroup(object):
                         gr.Dropdown.update(
                             value=default_model, choices=filtered_model_list
                         ),
+                        gr.Radio.update(),
+                        gr.Slider.update(),
+                        gr.Slider.update(),
+                        gr.Slider.update(),
                     ]
 
             self.type_filter.change(
                 filter_selected,
                 inputs=[self.type_filter],
-                outputs=[self.module, self.model],
+                outputs=[self.module, self.model, self.resize_mode, self.weight, self.guidance_start, self.guidance_end],
                 show_progress=False
             )
 
