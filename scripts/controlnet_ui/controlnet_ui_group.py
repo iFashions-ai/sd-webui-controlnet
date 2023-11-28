@@ -323,14 +323,23 @@ class ControlNetUiGroup(object):
 
         if not shared.opts.data.get("controlnet_disable_control_type", False):
             filters = list(preprocessor_filters.keys() if default_show_all_controls else preprocessor_filters_with_defaults.keys())
+            default_filter = filters[0]
             with gr.Row(elem_classes=["controlnet_control_type", "controlnet_row"]):
                 self.type_filter = gr.Radio(
                     choices=filters,
                     label="Control Type",
-                    value=filters[0],
+                    value=default_filter,
                     elem_id=f"{elem_id_tabname}_{tabname}_controlnet_type_filter_radio",
                     elem_classes="controlnet_control_type_filter_group",
                 )
+                if default_filter in preprocessor_filters_with_defaults:
+                    default = preprocessor_filters_with_defaults[default_filter]
+                    self.default_unit.module = default.option
+                    self.default_unit.model = default.model
+                    self.default_unit.weight = default.control_weight
+                    self.default_unit.guidance_start = default.control_start
+                    self.default_unit.guidance_end = default.control_end
+                    self.default_unit.resize_mode = default.resize_mode
 
             def fn_show_all_controls(value):
                 filters = list(preprocessor_filters.keys() if value else preprocessor_filters_with_defaults.keys())
@@ -639,7 +648,7 @@ class ControlNetUiGroup(object):
                         gr.Dropdown.update(
                             value=default_model, choices=filtered_model_list
                         ),
-                        gr.Radio.update(value=default.resize_mode),
+                        gr.Radio.update(value=default.resize_mode.value),
                         gr.Slider.update(value=default.control_weight),
                         gr.Slider.update(value=default.control_start),
                         gr.Slider.update(value=default.control_end),
