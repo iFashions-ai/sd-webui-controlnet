@@ -18,7 +18,6 @@ from scripts.processor import (
     flag_preprocessor_resolution,
     model_free_preprocessors,
     preprocessor_filters,
-    preprocessor_filters_with_defaults,
     HWC3,
 )
 from scripts.logging import logger
@@ -321,6 +320,8 @@ class ControlNetUiGroup(object):
             else:
                 self.upload_independent_img_in_img2img = None
 
+        preprocessor_filters_with_defaults = processor.sdxl_preprocessor_filters_with_defaults if shared.opts.data.get("sdxl_filter_enabled", True) else processor.sd15_preprocessor_filters_with_defaults
+
         if not shared.opts.data.get("controlnet_disable_control_type", False):
             filters = list(preprocessor_filters.keys() if default_show_all_controls else preprocessor_filters_with_defaults.keys())
             default_filter = filters[0]
@@ -343,7 +344,7 @@ class ControlNetUiGroup(object):
 
             def fn_show_all_controls(value):
                 filters = list(preprocessor_filters.keys() if value else preprocessor_filters_with_defaults.keys())
-                return gr.Radio.update(choices=filters, default=filters[0])
+                return gr.Radio.update(choices=filters, value=filters[0])
 
             self.show_all_controls.change(fn_show_all_controls, self.show_all_controls, self.type_filter)
 
@@ -638,6 +639,7 @@ class ControlNetUiGroup(object):
                     default_model,
                 ) = global_state.select_control_type(k)
 
+                preprocessor_filters_with_defaults = processor.sdxl_preprocessor_filters_with_defaults if shared.opts.data.get("sdxl_filter_enabled", True) else processor.sd15_preprocessor_filters_with_defaults
                 if k in preprocessor_filters_with_defaults:
                     default = preprocessor_filters_with_defaults[k]
                     default_option, default_model = default.option, default.model

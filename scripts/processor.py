@@ -1008,12 +1008,20 @@ class PreprocessorDefaults:
     resize_mode: ResizeMode = ResizeMode.OUTER_FIT
 
 
-preprocessor_filters_with_defaults = {
+sdxl_preprocessor_filters_with_defaults = {
     "IP-Adapter": PreprocessorDefaults("ip-adapter_clip_sdxl", "ip-adapter_xl [4209e9f7]", control_weight=0.7, control_end=0.7, resize_mode=ResizeMode.RESIZE) ,
     "IP-Adapter-plus": PreprocessorDefaults("ip-adapter_clip_vith_foo", "ip-adapter-plus_sdxl_vit-h [f1f19f7d]", control_weight=0.5, control_end=0.5, resize_mode=ResizeMode.RESIZE),
     "Canny": PreprocessorDefaults("canny", "t2i-adapter-canny-sdxl-1.0 [b016005c]", control_weight=1, control_end=1, resize_mode=ResizeMode.OUTER_FIT),
     "Depth": PreprocessorDefaults("depth_midas", "t2i-adapter-depth-midas-sdxl-1.0 [8b4552d9]", control_weight=1, control_end=1, resize_mode=ResizeMode.OUTER_FIT),
     "Scribble/Sketch": PreprocessorDefaults("t2ia_sketch_pidi", "t2i-adapter-sketch-sdxl-1.0 [f71e64c1]", control_weight=1, control_end=1, resize_mode=ResizeMode.OUTER_FIT),
+}
+
+sd15_preprocessor_filters_with_defaults = {
+    "IP-Adapter": PreprocessorDefaults("ip-adapter_clip_sd15", "ip-adapter_sd15 [dbbc7cfe]", control_weight=0.7, control_end=0.7, resize_mode=ResizeMode.RESIZE) ,
+    "IP-Adapter-plus": PreprocessorDefaults("ip-adapter_clip_vith_foo", "ip-adapter-plus_sd15 [836b5c2e]", control_weight=0.5, control_end=0.5, resize_mode=ResizeMode.RESIZE),
+    "Canny": PreprocessorDefaults("canny", "control_v11p_sd15_canny [d14c016b]", control_weight=1, control_end=1, resize_mode=ResizeMode.OUTER_FIT),
+    "Depth": PreprocessorDefaults("depth_midas", "control_v11f1p_sd15_depth [cfd03158]", control_weight=1, control_end=1, resize_mode=ResizeMode.OUTER_FIT),
+    "Scribble/Sketch": PreprocessorDefaults("scribble_pidinet", "control_v11p_sd15_scribble [d4ba51ff]", control_weight=1, control_end=1, resize_mode=ResizeMode.OUTER_FIT),
 }
 
 preprocessor_filters = {
@@ -1049,6 +1057,6 @@ preprocessor_filters_aliases = {
 }  # must use all lower texts
 
 
-for k, default in preprocessor_filters_with_defaults.items():
+for k, default in sdxl_preprocessor_filters_with_defaults.items():
     preprocessor_filters[k] = default.option
     preprocessor_filters_aliases.setdefault(k.lower(), []).append(default.option.lower())
