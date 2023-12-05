@@ -279,10 +279,6 @@ class Script(scripts.Script, metaclass=(
         max_models = shared.opts.data.get("control_net_unit_count", 3)
         elem_id_tabname = ("img2img" if is_img2img else "txt2img") + "_controlnet"
         with gr.Group(elem_id=elem_id_tabname):
-            if is_img2img:
-                accordion = gr.Accordion(f"ControlNet {controlnet_version.version_flag}", open = False, elem_id="controlnet")
-                accordion.__enter__()
-
             with gr.Group(elem_id="controlnet"):
                 if max_models > 1:
                     with gr.Tabs(elem_id=f"{elem_id_tabname}_tabs"):
@@ -297,9 +293,6 @@ class Script(scripts.Script, metaclass=(
                         group, state = self.uigroup(f"ControlNet", is_img2img, elem_id_tabname)
                         infotext.register_unit(0, group)
                         controls += (state,)
-
-            if is_img2img:
-                accordion.__exit__(None, None, None)
 
         if shared.opts.data.get("control_net_sync_field_args", True):
             self.infotext_fields = infotext.infotext_fields
