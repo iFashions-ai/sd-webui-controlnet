@@ -168,9 +168,8 @@ class ControlNetUiGroup(object):
             None
         """
         with gr.Group(visible=not is_img2img) as self.image_upload_panel:
-            with gr.Tabs():
-                with gr.Tab(label="Single Image") as self.upload_tab:
-                    with gr.Row(elem_classes=["cnet-image-row"], equal_height=True):
+            with gr.Tab(label="Single Image") as self.upload_tab:
+                with gr.Row(elem_classes=["cnet-image-row"], equal_height=True):
                         with gr.Group(elem_classes=["cnet-input-image-group"]):
                             self.image = gr.Image(
                                 source="upload",
@@ -210,6 +209,7 @@ class ControlNetUiGroup(object):
                                     elem_classes=["cnet-close-preview"],
                                 )
 
+            with gr.Tabs(visible=False):
                 with gr.Tab(label="Batch") as self.batch_tab:
                     self.batch_image_dir = gr.Textbox(
                         label="Input Directory",
@@ -283,11 +283,13 @@ class ControlNetUiGroup(object):
                 label="Low VRAM",
                 value=self.default_unit.low_vram,
                 elem_id=f"{elem_id_tabname}_{tabname}_controlnet_low_vram_checkbox",
+                visible=False
             )
             self.pixel_perfect = gr.Checkbox(
                 label="Pixel Perfect",
                 value=self.default_unit.pixel_perfect,
                 elem_id=f"{elem_id_tabname}_{tabname}_controlnet_pixel_perfect_checkbox",
+                visible=False
             )
             self.preprocessor_preview = gr.Checkbox(
                 label="Allow Preview",
@@ -307,6 +309,7 @@ class ControlNetUiGroup(object):
                 value=default_show_all_controls,
                 elem_id=f"{elem_id_tabname}_{tabname}_controlnet_show_all_controls_checkbox",
                 elem_classes=["cnet-unit-enabled"],
+                visible=False
             )
 
         with gr.Row(elem_classes="controlnet_img2img_options"):
@@ -351,9 +354,11 @@ class ControlNetUiGroup(object):
         with gr.Row(elem_classes=["controlnet_preprocessor_model", "controlnet_row"]):
             self.module = gr.Dropdown(
                 global_state.ui_preprocessor_keys,
-                label=f"Preprocessor",
+                label="Preprocessor",
                 value=self.default_unit.module,
                 elem_id=f"{elem_id_tabname}_{tabname}_controlnet_preprocessor_dropdown",
+                interactive=False,
+                visible=not is_img2img,
             )
             self.trigger_preprocessor = ToolButton(
                 value=ControlNetUiGroup.trigger_symbol,
@@ -364,19 +369,21 @@ class ControlNetUiGroup(object):
             )
             self.model = gr.Dropdown(
                 list(global_state.cn_models.keys()),
-                label=f"Model",
+                label="Model",
                 value=self.default_unit.model,
                 elem_id=f"{elem_id_tabname}_{tabname}_controlnet_model_dropdown",
+                interactive=False,
             )
             self.refresh_models = ToolButton(
                 value=ControlNetUiGroup.refresh_symbol,
                 elem_id=f"{elem_id_tabname}_{tabname}_controlnet_refresh_models",
                 tooltip=ControlNetUiGroup.tooltips[ControlNetUiGroup.refresh_symbol],
+                visible=False,
             )
 
         with gr.Row(elem_classes=["controlnet_weight_steps", "controlnet_row"]):
             self.weight = gr.Slider(
-                label=f"Control Weight",
+                label="Control Weight",
                 value=self.default_unit.weight,
                 minimum=0.0,
                 maximum=2.0,
@@ -439,6 +446,7 @@ class ControlNetUiGroup(object):
             label="Control Mode",
             elem_id=f"{elem_id_tabname}_{tabname}_controlnet_control_mode_radio",
             elem_classes="controlnet_control_mode_radio",
+            visible=False,
         )
 
         self.resize_mode = gr.Radio(
@@ -455,11 +463,12 @@ class ControlNetUiGroup(object):
             value=self.default_unit.loopback,
             elem_id=f"{elem_id_tabname}_{tabname}_controlnet_automatically_send_generated_images_checkbox",
             elem_classes="controlnet_loopback_checkbox",
-            visible=not is_img2img,
+            # visible=not is_img2img,
+            visible=False
         )
 
         self.preset_panel = ControlNetPresetUI(
-            id_prefix=f"{elem_id_tabname}_{tabname}_"
+            id_prefix=f"{elem_id_tabname}_{tabname}_", visible=False
         )
 
     def register_send_dimensions(self, is_img2img: bool):
@@ -607,8 +616,12 @@ class ControlNetUiGroup(object):
                 0, self.prevent_next_n_slider_value_update - 1
             )
 
-            grs += [gr.update(visible=module not in no_control_mode_preprocessors)]
+            # Control mode
+            # grs += [gr.update(visible=module not in no_control_mode_preprocessors)]
+            grs += [gr.update(visible=False)]
 
+            # Preprocessor resolution
+            grs[0]["visible"] = False
             return grs
 
         inputs = [
@@ -624,7 +637,7 @@ class ControlNetUiGroup(object):
             self.refresh_models,
             self.control_mode
         ]
-        self.module.change(build_sliders, inputs=inputs, outputs=outputs, show_progress=False)
+        self.module.change(build_sliders, inputs=inputs, outputs=outputs, show_progress=True)
         self.pixel_perfect.change(build_sliders, inputs=inputs, outputs=outputs, show_progress=False)
 
         if self.type_filter is not None:

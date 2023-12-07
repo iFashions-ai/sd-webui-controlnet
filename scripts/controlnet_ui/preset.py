@@ -58,8 +58,8 @@ class ControlNetPresetUI(object):
     preset_directory = os.path.join(scripts.basedir(), "presets")
     presets = load_presets(preset_directory)
 
-    def __init__(self, id_prefix: str):
-        with gr.Row():
+    def __init__(self, id_prefix: str, visible: bool=True):
+        with gr.Row(visible=visible):
             self.dropdown = gr.Dropdown(
                 label="Presets",
                 show_label=True,
