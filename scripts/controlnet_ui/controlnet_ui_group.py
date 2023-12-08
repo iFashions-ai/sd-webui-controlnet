@@ -358,7 +358,6 @@ class ControlNetUiGroup(object):
                 value=self.default_unit.module,
                 elem_id=f"{elem_id_tabname}_{tabname}_controlnet_preprocessor_dropdown",
                 interactive=False,
-                visible=not is_img2img,
             )
             self.trigger_preprocessor = ToolButton(
                 value=ControlNetUiGroup.trigger_symbol,
