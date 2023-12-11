@@ -285,12 +285,6 @@ class ControlNetUiGroup(object):
                 elem_id=f"{elem_id_tabname}_{tabname}_controlnet_low_vram_checkbox",
                 visible=False
             )
-            self.pixel_perfect = gr.Checkbox(
-                label="Pixel Perfect",
-                value=self.default_unit.pixel_perfect,
-                elem_id=f"{elem_id_tabname}_{tabname}_controlnet_pixel_perfect_checkbox",
-                visible=False
-            )
             self.preprocessor_preview = gr.Checkbox(
                 label="Allow Preview",
                 value=False,
@@ -312,6 +306,7 @@ class ControlNetUiGroup(object):
                 visible=False
             )
 
+
         with gr.Row(elem_classes="controlnet_img2img_options"):
             if is_img2img:
                 self.upload_independent_img_in_img2img = gr.Checkbox(
@@ -322,6 +317,15 @@ class ControlNetUiGroup(object):
                 )
             else:
                 self.upload_independent_img_in_img2img = None
+
+        self.pixel_perfect = gr.Checkbox(
+                label="Pixel Perfect",
+                value=self.default_unit.pixel_perfect,
+                elem_id=f"{elem_id_tabname}_{tabname}_controlnet_pixel_perfect_checkbox",
+                info="Pixel Perfect: use full preprocessor resoution that may improve quality, recommended for edge/sketch."
+                # visible=False
+        )
+
 
         preprocessor_filters_with_defaults = processor.sdxl_preprocessor_filters_with_defaults if shared.opts.data.get("sdxl_filter_enabled", True) else processor.sd15_preprocessor_filters_with_defaults
 
@@ -353,11 +357,11 @@ class ControlNetUiGroup(object):
 
         with gr.Row(elem_classes=["controlnet_preprocessor_model", "controlnet_row"]):
             self.module = gr.Dropdown(
-                global_state.ui_preprocessor_keys,
+                choices=["none", self.default_unit.module],
                 label="Preprocessor",
                 value=self.default_unit.module,
                 elem_id=f"{elem_id_tabname}_{tabname}_controlnet_preprocessor_dropdown",
-                interactive=False,
+                interactive=True,
             )
             self.trigger_preprocessor = ToolButton(
                 value=ControlNetUiGroup.trigger_symbol,
@@ -655,6 +659,10 @@ class ControlNetUiGroup(object):
                 if k in preprocessor_filters_with_defaults:
                     default = preprocessor_filters_with_defaults[k]
                     default_option, default_model = default.option, default.model
+                    none_preprocessor_valid = "none" in filtered_preprocessor_list
+                    filtered_preprocessor_list = [default_option]
+                    if none_preprocessor_valid:
+                        filtered_preprocessor_list.insert(0, "none")
                     return [
                         gr.Dropdown.update(
                             value=default_option, choices=filtered_preprocessor_list
