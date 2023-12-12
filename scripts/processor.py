@@ -1011,9 +1011,9 @@ class PreprocessorDefaults:
 sdxl_preprocessor_filters_with_defaults = {
     "ImageStyle": PreprocessorDefaults("ip-adapter_clip_sdxl", "ip-adapter_xl [4209e9f7]", control_weight=0.7, control_end=0.7, resize_mode=ResizeMode.RESIZE) ,
     # "IP-Adapter-plus": PreprocessorDefaults("ip-adapter_clip_vith_foo", "ip-adapter-plus_sdxl_vit-h [f1f19f7d]", control_weight=0.5, control_end=0.5, resize_mode=ResizeMode.RESIZE),
-    "Edge": PreprocessorDefaults("canny", "t2i-adapter-canny-sdxl-1.0 [b016005c]", control_weight=1, control_end=1, resize_mode=ResizeMode.OUTER_FIT),
-    "Depth": PreprocessorDefaults("depth_midas", "t2i-adapter-depth-midas-sdxl-1.0 [8b4552d9]", control_weight=0.8, control_end=1, resize_mode=ResizeMode.OUTER_FIT),
-    "Scribble/Sketch": PreprocessorDefaults("t2ia_sketch_pidi", "t2i-adapter-sketch-sdxl-1.0 [f71e64c1]", control_weight=0.8, control_end=1, resize_mode=ResizeMode.OUTER_FIT),
+    "Edge": PreprocessorDefaults("canny", "t2i-adapter-canny-sdxl-1.0 [b016005c]", control_weight=0.8, control_end=0.8, resize_mode=ResizeMode.OUTER_FIT),
+    "Depth": PreprocessorDefaults("depth_midas", "t2i-adapter-depth-midas-sdxl-1.0 [8b4552d9]", control_weight=0.8, control_end=0.8, resize_mode=ResizeMode.OUTER_FIT),
+    "Scribble/Sketch": PreprocessorDefaults("t2ia_sketch_pidi", "t2i-adapter-sketch-sdxl-1.0 [f71e64c1]", control_weight=0.8, control_end=0.8, resize_mode=ResizeMode.OUTER_FIT),
 }
 
 sd15_preprocessor_filters_with_defaults = {

@@ -247,7 +247,8 @@ def get_all_units_from(script_args: List[Any]) -> List[ControlNetUnit]:
         for script_arg in script_args
         if is_controlnet_unit(script_arg)
     ]
-    if not all_units:
+    if not all_units and False:
+        # Disable controlnet for img2img
         logger.warning(
             "No ControlNetUnit detected in args. It is very likely that you are having an extension conflict."
             f"Here are args received by ControlNet: {script_args}.")
