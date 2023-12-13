@@ -24,6 +24,7 @@ from scripts.controlnet_ui.controlnet_ui_group import ControlNetUiGroup, UiContr
 from scripts.logging import logger
 from modules.processing import StableDiffusionProcessingImg2Img, StableDiffusionProcessingTxt2Img
 from modules.images import save_image
+from modules.errors import ImageNotFoundError
 from scripts.infotext import Infotext
 
 import cv2
@@ -605,7 +606,9 @@ class Script(scripts.Script, metaclass=(
             if input_image is None:
                 if batch_hijack.instance.is_batch:
                     shared.state.interrupted = True
-                raise ValueError('controlnet is enabled but no input image is given')
+                raise ImageNotFoundError("ImagePrompt is enabled but image not found, "
+                                            "please reupload the image, disable the unused conditions, "
+                                            "or refresh the page to try again.")
 
             input_image = HWC3(np.asarray(input_image))
             image_from_a1111 = True
