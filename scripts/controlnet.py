@@ -24,7 +24,7 @@ from scripts.controlnet_ui.controlnet_ui_group import ControlNetUiGroup, UiContr
 from scripts.logging import logger
 from modules.processing import StableDiffusionProcessingImg2Img, StableDiffusionProcessingTxt2Img
 from modules.images import save_image
-from modules.errors import ImageNotFoundError
+from modules.errors import ImageNotFoundError, ImagePromptNotSupported
 from scripts.infotext import Infotext
 
 import cv2
@@ -607,7 +607,7 @@ class Script(scripts.Script, metaclass=(
                 if batch_hijack.instance.is_batch:
                     shared.state.interrupted = True
                 raise ImageNotFoundError("ImagePrompt is enabled but image not found, "
-                                            "please reupload the image, disable the unused conditions, "
+                                            "please re-upload the image, disable the unused conditions, "
                                             "or refresh the page to try again.")
 
             input_image = HWC3(np.asarray(input_image))
@@ -968,6 +968,9 @@ class Script(scripts.Script, metaclass=(
         t = time.time()
         self.controlnet_main_entry(p)
         if len(self.enabled_units) > 0:
+            if p.image_mask is not None and p.is_fooocus_inpainting:
+                # controlnet not support fooocus inpainting
+                raise ImagePromptNotSupported("ImagePrompt is currently not supported for inpainting.")
             logger.info(f'ControlNet Hooked - Time = {time.time() - t}')
         return
 
