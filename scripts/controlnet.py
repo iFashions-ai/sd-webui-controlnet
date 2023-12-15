@@ -968,7 +968,7 @@ class Script(scripts.Script, metaclass=(
         t = time.time()
         self.controlnet_main_entry(p)
         if len(self.enabled_units) > 0:
-            if p.image_mask is not None and p.is_fooocus_inpainting:
+            if hasattr(p, 'image_mask') and p.image_mask is not None and p.is_fooocus_inpainting:
                 # controlnet not support fooocus inpainting
                 raise ImagePromptNotSupported("ImagePrompt is currently not supported for inpainting.")
             logger.info(f'ControlNet Hooked - Time = {time.time() - t}')
