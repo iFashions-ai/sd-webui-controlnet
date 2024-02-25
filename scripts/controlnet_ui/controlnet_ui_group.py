@@ -303,7 +303,7 @@ class ControlNetUiGroup(object):
                 value=default_show_all_controls,
                 elem_id=f"{elem_id_tabname}_{tabname}_controlnet_show_all_controls_checkbox",
                 elem_classes=["cnet-unit-enabled"],
-                visible=False
+                visible=True
             )
 
 
@@ -375,7 +375,7 @@ class ControlNetUiGroup(object):
                 label="Model",
                 value=self.default_unit.model,
                 elem_id=f"{elem_id_tabname}_{tabname}_controlnet_model_dropdown",
-                interactive=False,
+                interactive=True,
             )
             self.refresh_models = ToolButton(
                 value=ControlNetUiGroup.refresh_symbol,
